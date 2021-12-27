@@ -1,0 +1,99 @@
+- strings = generate_strings
+.background-drop
+.main-content
+  h1 = "TRÒ CHƠI GHÉP TỪ"
+  #time-count-down.display-none
+  .main-content-item
+    - strings.each_with_index do |object, index|
+      .item-row
+        .group-item
+          - object[:chars].each_with_index do |char, index|
+            .item-col = char
+      .item-row-result.display-none = object[:result]
+
+  .panigation
+    button.start onclick="start();" = "start"
+    button.reset.display-none onclick="reset();" = "reset"
+    button.next.display-none onclick="next();"   = "next"
+    button.result.display-none onclick="result();" = "result"
+
+javascript:
+  var resultList = $('.main-content-item .item-row-result');
+  var timeCountDownElement = document.getElementById("time-count-down");
+  var nextItem = 1;
+  var prevItem = 0;
+  var myTimer;
+  var time = 0;
+
+  function start() {
+    $('.main-content-item .item-row').first().addClass('active');
+    $('.panigation button').removeClass('display-none');
+    $('button.start').addClass('display-none');
+    $('#time-count-down').addClass('active');
+    clock();
+  }
+
+  function result() {
+    clearInterval(myTimer);
+    resultList.addClass('display-none');
+    $(resultList[nextItem - 1]).removeClass('display-none');
+  }
+
+  function reset() {
+    resultList.removeClass('display-none');
+    resultList.addClass('display-none');
+    clearInterval(myTimer);
+    clock();
+  }
+
+  function next() {
+    resultList.addClass('display-none');
+    reset();
+    changeColorCountDown();
+    var item = $('.main-content-item .item-row');
+    item.removeClass('active');
+    $(item[nextItem]).addClass('active');
+    if (nextItem >= item.length) {return}
+    ++nextItem
+    ++prevItem
+  }
+
+  /*function prev() {
+    $('.item-row-result').addClass('display-none');
+    changeColorCountDown();
+    var item = $('.main-content-item .item-row');
+    item.removeClass('active');
+    $(item[prevItem]).addClass('active');
+    if (prevItem <= 0) {return}
+    --nextItem
+    --prevItem
+    clock();
+  }*/
+
+  function clock() {
+    changeColorCountDown();
+    time = 15;
+    myTimer = setInterval(myClock ,1000);
+    timeCountDownElement.innerHTML = time;
+
+    function myClock() {
+      timeCountDownElement.innerHTML = --time;
+      if (time == 0) {
+        changeColorCountDown();
+        clearInterval(myTimer);
+      }
+      if (time <= 5) {
+        timeCountDownElement.style.borderColor = "red";
+        timeCountDownElement.style.color = "red";
+      } else {
+        changeColorCountDown();
+      }
+    }
+  }
+
+  function changeColorCountDown() {
+    $('#time-count-down').css({
+      'border-color': 'green',
+      color: 'green'
+    });
+  }
